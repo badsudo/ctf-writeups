@@ -151,7 +151,7 @@ now the trick comes in here . if we are able to bypass this check where we are i
 if we achieve that condition we can obtain a Use After Free which we can poison the forward pointer to get an arbitrary write.
 
 
- **How do we achieve it ? **
+ **How do we achieve it ?**
  
  Integer Oveflow attacks ! if you are not familliar with such topic u can refer to this article on CTF wiki 
  > https://ctf-wiki.mahaloz.re/pwn/linux/integeroverflow/intof/

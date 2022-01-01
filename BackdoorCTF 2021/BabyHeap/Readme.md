@@ -235,7 +235,9 @@ now trigger the shell we just free the last chunk which contains our string so i
 ``` 
 Executing The exploit and sending **cat flag.txt** We Get  
 > retr0{FAKE_FUCKING_FLAG}
+
 I hope i made everything clear . 
+
 Thanks ! .
 
 

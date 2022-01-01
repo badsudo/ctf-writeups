@@ -7,7 +7,9 @@ I didn't manage to solve this challenge during the ctf , but i kept trying until
 
 # Analysis
 let's start by reversing the four main functions.
+
 **All reversing was made in IDA PRO 7.5**
+
 #### Create Function
 ```C
 unsigned __int64 main_allocate()
@@ -45,6 +47,7 @@ int men_for_chunk_sizes()
 ```
 Then we enter a loop which loops depending on how many chunks we are going to allocate
 If we focus a little bit in here we can notice a strange thing happening which is we have 2 counters incrementing, We will figure out why later on.
+ 
  **counter2_and_allocation()**
 ```C
 void __fastcall counter2_and_allocation(int a1)

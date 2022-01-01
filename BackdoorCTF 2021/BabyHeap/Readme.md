@@ -7,7 +7,7 @@ I didn't manage to solve this challenge during the ctf , but i kept trying until
 
 # Analysis
 let's start by reversing the four main functions.
-**all reversing was made in IDA PRO 7.5**
+**All reversing was made in IDA PRO 7.5**
 #### Create Function
 ```C
 unsigned __int64 main_allocate()
@@ -31,5 +31,56 @@ unsigned __int64 main_allocate()
     counter2_and_allocation(choice);
   }
   return __readfsqword(0x28u) ^ v4;
+}
+```
+We are Prompted to enter the number of chunks we want to allocate. Then we chose the size we want from a menu.
+```C
+int men_for_chunk_sizes()
+{
+  puts("1. Large size.");
+  puts("2. Medium size.");
+  puts("3. Small size.");
+  return printf(">> ");
+}
+```
+Then we enter a loop which loops depending on how many chunks we are going to allocate
+If we focus a little bit in here we can notice a strange thing happening which is we have 2 counters incrementing, We will figure out why later on.
+ **counter2_and_allocation()**
+```C
+void __fastcall counter2_and_allocation(int a1)
+{
+  unsigned int index; // ebx
+  int size; // [rsp+1Ch] [rbp-14h]
+
+  if ( a1 == 3 )                                // small
+  {
+    size = 128;
+  }
+  else
+  {
+    if ( a1 > 3 )
+      return;
+    if ( a1 == 1 )                              // large
+    {
+      size = 1040;
+    }
+    else
+    {
+      if ( a1 != 2 )                            // medium
+        return;
+      size = 512;
+    }
+  }
+  if ( (unsigned int)index_counter > 16 )       // MAX OF 16 ALLOCATIONS
+    exit(0);
+  index = index_counter++;
+  notes[index] = malloc(size);
+}
+```
+ **TODO()**
+```C
+__int64 TODO()
+{
+  return (unsigned int)++COUNTER_FROM_TODO;
 }
 ```

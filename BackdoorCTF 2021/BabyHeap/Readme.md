@@ -1,9 +1,14 @@
 # BackdoorCTF 2021
 pwn, 500.
 
-
+I didn't manage to solve this challenge during the ctf , but i kept trying until i finished it so this is a little writeup so i can share what i learnt and for keeping it as a resource for me for next challs.
 ## Description
 > A classic heap exploitation challenge but with a plot twist.
+
+# Analysis
+let's start by reversing the four main functions
+**all reversing was made in IDA PRO 7.5**
+#### Create Function
 ```C
 unsigned __int64 main_allocate()
 {

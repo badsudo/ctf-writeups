@@ -6,7 +6,7 @@ I didn't manage to solve this challenge during the ctf , but i kept trying until
 > A classic heap exploitation challenge but with a plot twist.
 
 # Analysis
-let's start by reversing the four main functions
+let's start by reversing the four main functions.
 **all reversing was made in IDA PRO 7.5**
 #### Create Function
 ```C

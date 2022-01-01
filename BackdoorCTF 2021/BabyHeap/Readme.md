@@ -74,7 +74,7 @@ void __fastcall counter2_and_allocation(int a1)
       size = 512;
     }
   }
-  if ( (unsigned int)index_counter > 16 )       // MAX OF 16 ALLOCATIONS
+  if ( (unsigned int)index_counter > 16 )       
     exit(0);
   index = index_counter++;
   notes[index] = malloc(size);

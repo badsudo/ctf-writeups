@@ -16,7 +16,7 @@ this is a classic ret2libc challenge
 
 now we start constructing our exploit 
 
-```python=
+```python
 from pwn import * 
 context.update(arch='amd64',os='linux',log_level='debug')
 p = process('./main')

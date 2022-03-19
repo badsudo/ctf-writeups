@@ -231,7 +231,9 @@ So let's create some chunks and we will discuss our strategie.
     alloc(3, 0x10, "D"*0x9)
 ```
 so after those allocations our heap area should look like this 
+
 ![](https://i.imgur.com/crxGieH.png)
+
 > 2.Leak libc addres: 
 
 the plan is going to abuse the null byte overflow by overwriting the ``prev_inuse`` bit from ``1`` to ``0`` to mark the previous chunk as a free chunk .
